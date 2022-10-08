@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/order/payment")
@@ -28,8 +30,18 @@ public class OrderController {
         }catch (Exception e){
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrderDto>> listOrders(){
+        return  service.ListOrders();
+    }
 
 
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDto> orderById(@PathVariable @NotNull Long id) {
+        return service.orderById(id);
     }
 
 }
