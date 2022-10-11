@@ -1,4 +1,4 @@
-package br.com.paymentservicepb.security;
+package br.com.paymentservicepb.config.security;
 
 import br.com.paymentservicepb.services.TokenService;
 

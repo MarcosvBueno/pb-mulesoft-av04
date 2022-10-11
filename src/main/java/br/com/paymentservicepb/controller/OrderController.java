@@ -2,8 +2,13 @@ package br.com.paymentservicepb.controller;
 
 import br.com.paymentservicepb.dto.OrderDto;
 import br.com.paymentservicepb.form.OrderForm;
+import br.com.paymentservicepb.model.OrderEntity;
 import br.com.paymentservicepb.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,15 +38,25 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDto>> listOrders(){
-        return  service.ListOrders();
+    public Page<OrderDto> ListAllOrders(@PageableDefault(size = 10) Pageable pagination) {
+        return service.ListOrders(pagination);
+
+    }
+/*
+    @GetMapping
+    public List<OrderApprovedDto> getAll(){
+        List<OrderTransaction> order=paymentService.getAll();
+        return OrderApprovedDto.convert(order);
     }
 
-
-
+ */
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> orderById(@PathVariable @NotNull Long id) {
-        return service.orderById(id);
-    }
+    public ResponseEntity<OrderDto> orderById (@PathVariable @NotNull Long id) {
+        try {
+            return service.orderById(id);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
 
+    }
 }

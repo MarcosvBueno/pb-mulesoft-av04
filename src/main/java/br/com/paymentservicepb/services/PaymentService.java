@@ -3,9 +3,11 @@ package br.com.paymentservicepb.services;
 import br.com.paymentservicepb.dto.OrderDto;
 import br.com.paymentservicepb.form.OrderForm;
 import br.com.paymentservicepb.model.OrderEntity;
+import br.com.paymentservicepb.model.Payment;
 import br.com.paymentservicepb.repository.OrderRepository;
 import br.com.paymentservicepb.util.Mapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.aspectj.bridge.IMessageHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +29,13 @@ public class PaymentService {
     @Autowired
     private ModelMapper modelMapper;
 
+    public PaymentService(OrderRepository repository) {
+        this.repository = repository;
+    }
+
     @Autowired
     private OrderRepository repository;
+
 
 
     public OrderDto registerNewOrder(OrderForm form) {
@@ -35,12 +45,10 @@ public class PaymentService {
         return modelMapper.map(order, OrderDto.class);
     }
 
-    public ResponseEntity<List<OrderDto>> ListOrders() {
-        List<OrderEntity> order = repository.findAll();
-        if(order.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok().build();
+    public Page<OrderDto> ListOrders(Pageable paginacao){
+        return repository
+                .findAll(paginacao)
+                .map(p -> modelMapper.map(p, OrderDto.class));
 }
 
 
@@ -51,8 +59,11 @@ public class PaymentService {
                 return ResponseEntity.ok(orderDto);
             }
             return ResponseEntity.notFound().build();
-        }
-    }
+     }
+
+
+}
+
 
 
 
