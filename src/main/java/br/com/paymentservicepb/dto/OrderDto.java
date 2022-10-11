@@ -22,5 +22,5 @@ public class OrderDto {
     private PaymentStatus paymentStatus;
 
     private String message;
-    
+
 }

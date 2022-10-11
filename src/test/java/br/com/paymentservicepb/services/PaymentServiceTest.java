@@ -11,6 +11,7 @@ import br.com.paymentservicepb.model.Payment;
 import br.com.paymentservicepb.repository.OrderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,11 +67,24 @@ class PaymentServiceTest {
 
 
     @Test
-    void listOrders() {
+    void ShouldlistAllOrders() {
+    List<OrderDto> orderDto = getAllOrders();
+
+    Mockito.when(service.ListOrders()).thenReturn(orderDto);
+    Assertions.assertNotNull(orderDto);
+    Assertions.assertEquals(orderDto.size(),1);
+
+
     }
 
     @Test
-    void orderById() {
+    void shouldReturnARequestWithDetails() {
+
+    Mockito.when(service.orderById(Mockito.anyLong())).thenReturn(getOrderDatilsById());
+
+    OrderDto orderDto = service.orderById(1L);
+
+    Assertions.assertEquals(1L,orderDto.getOrderId());
 
     }
 
@@ -78,7 +92,7 @@ class PaymentServiceTest {
     public OrderForm orderFormAproved(){
         List<OrderForm> orderFormList = new ArrayList<>();
         List<Items> items =  new ArrayList<>();
-        Items item = new Items("fanta-uva", new BigDecimal(5), 10);
+        Items item = new Items("brigadeiro", new BigDecimal(5), 10);
         items.add(item);
         PaymentType paymentType = PaymentType.CREDIT_CARD;
         CurrencyType currencyType = CurrencyType.BRL;
@@ -91,7 +105,7 @@ class PaymentServiceTest {
     public OrderForm OrderFormRecused(){
         List<OrderForm> orderFormList = new ArrayList<>();
         List<Items> items =  new ArrayList<>();
-        Items item = new Items("fanta-uva", new BigDecimal(5), 10);
+        Items item = new Items("brigadeiro", new BigDecimal(5), 10);
         items.add(item);
         PaymentType paymentType = PaymentType.CREDIT_CARD;
         CurrencyType currencyType = CurrencyType.BRL;
@@ -101,10 +115,20 @@ class PaymentServiceTest {
 
     }
 
-    public OrderDto OrderDtoByOrder(){
-        PaymentStatus paymentStatus = PaymentStatus.APPROVED;
-        return new OrderDto(
-                (long)1,new BigDecimal(60),"1c3a1fec-9c4b-4b86-a2a2-ff537d29d3c7",PaymentStatus.APPROVED,"Transaction approved");
+    public List<OrderDto> getAllOrders(){
+    List<OrderDto> orderDtoList = new ArrayList<>();
+    OrderDto orderDto = new OrderDto(
+            1L, new BigDecimal(300),"1c3a1fec-9c4b-4b86-a2a2-ff537d29d3c7",PaymentStatus.APPROVED,"Transaction approved"
+    );
+    orderDtoList.add(orderDto);
+    return orderDtoList;
+    }
+
+    public OrderDto getOrderDatilsById(){
+        return  new OrderDto(
+                (long)1, new BigDecimal("400"),
+                "1c3a1fec-9c4b-4b86-a2a2-ff537d29d3c7",
+                PaymentStatus.APPROVED, "Transaction approved");
     }
 
 }
